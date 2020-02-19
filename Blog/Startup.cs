@@ -11,6 +11,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Serialization;
+using Blog.Data;
+using Blog.Models;
 
 namespace Blog
 {
@@ -26,10 +29,16 @@ namespace Blog
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services
+                .AddMvc()
+                .AddJsonOptions(opt => opt.SerializerSettings.ContractResolver = new DefaultContractResolver())
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddDbContext<BlogPostsContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("BlogPostsContext")));
+
+            services.AddCors();
+            services.AddScoped(typeof(IDataRepository<BlogPost>), typeof(DataRepository<BlogPost>));
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -46,6 +55,7 @@ namespace Blog
             }
 
             app.UseHttpsRedirection();
+            app.UseCors(opt=>opt.WithOrigins("").AllowAnyMethod().AllowAnyMethod());
             app.UseMvc();
         }
     }
