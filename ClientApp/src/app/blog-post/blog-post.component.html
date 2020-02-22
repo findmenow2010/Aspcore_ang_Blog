@@ -1,0 +1,9 @@
+<ng-container *ngIf="(blogPost$ | async) as blogPost; else loading">
+    <h1>{{ blogPost.Title }}</h1>
+    <div>{{ blogPost.Body }}</div>
+    <ul>
+        <li>{{ blogPost.Creator }}</li>
+        <li>{{ blogPost.Dt | date:'dd/MM/yyyy'}}</li>
+    </ul>
+</ng-container>
+<ng-template #loading>Loading…</ng-template>

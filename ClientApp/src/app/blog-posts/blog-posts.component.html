@@ -1,20 +1,32 @@
-<table class="table">
+<h1>Blog posts</h1><br/>
+
+<p *ngIf="!(blogPosts$ | async)"><em>Loading...</em></p>
+
+<p>
+    <a [routerLink]="['/add']" class="btn btn-primary float-right mb-3">New post</a>
+</p>
+
+<table class="table table-sm table-hover" *ngIf="(blogPosts$| async)?.length>0">
     <thead>
         <tr>
-            <th>Blog ID</th>
-            <th>Creator</th>
+            <th>#</th>
             <th>Title</th>
+            <th>Creator</th>
             <th>Body</th>
             <th>Date</th>
+            <th></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
-        <tr *ngFor="let p of data">
+         <tr *ngFor="let p of (blogPosts$ | async)">
             <td>{{p.PostId}}</td>
+            <td><a [routerLink]="['/blogpost/',p.PostId]"> {{p.Title}}</a></td>
             <td>{{p.Creator}}</td>
-            <td>{{p.Title}}</td>
             <td>{{p.Body}}</td>
             <td>{{p.Dt | date: 'dd/MM/yyyy'}}</td>
-        </tr>
+            <td><a [routerLink]="['/BlogPost/edit/',p.PostId]" class="btn btn-primary btn-sm float-right">edit</a></td>
+            <td><a [routerLink]="" (click)="delete(p.PostId)" class="btn btn-danger  btn-sm float-right">delete</a></td>
+        </tr> 
     </tbody>
 </table>
