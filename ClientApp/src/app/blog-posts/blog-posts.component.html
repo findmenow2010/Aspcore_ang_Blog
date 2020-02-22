@@ -1,0 +1,20 @@
+<table class="table">
+    <thead>
+        <tr>
+            <th>Blog ID</th>
+            <th>Creator</th>
+            <th>Title</th>
+            <th>Body</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let p of data">
+            <td>{{p.PostId}}</td>
+            <td>{{p.Creator}}</td>
+            <td>{{p.Title}}</td>
+            <td>{{p.Body}}</td>
+            <td>{{p.Dt | date: 'dd/MM/yyyy'}}</td>
+        </tr>
+    </tbody>
+</table>
