@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { blogpost } from '../models/blogpost';
 import { BlogPostService } from '../Services/blog-post.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-blog-posts',
@@ -9,7 +10,7 @@ import { BlogPostService } from '../Services/blog-post.service';
 })
 export class BlogPostsComponent implements OnInit {
 
-  data : blogpost[];
+  blogPosts$: Observable<blogpost[]>;
 
   constructor(private service : BlogPostService) { }
 
@@ -18,8 +19,18 @@ export class BlogPostsComponent implements OnInit {
   }
 
   getPosts(){
-    this.service.getPosts().toPromise().then(res=>{
-      this.data = res as blogpost[]
-    }).catch(err=>console.log(err));
+    this.blogPosts$ = this.service.getPosts();
+    //console.log(this.service.getPosts());
   }
+
+  delete(postId){
+    const ans = confirm("are you sure ?");
+    if(ans){
+      this.service.deletePost(postId).subscribe((data)=>{
+          this.getPosts();
+      });
+    }
+  }
+
+
 }

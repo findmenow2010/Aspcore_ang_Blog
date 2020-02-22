@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Blog.Models;
+using Blog.Data;
 
 namespace Blog.Controllers
 {
@@ -15,17 +16,19 @@ namespace Blog.Controllers
     public class BlogPostsController : ControllerBase
     {
         private readonly BlogPostsContext _context;
+        private readonly IDataRepository<BlogPost> _Repo;
 
-        public BlogPostsController(BlogPostsContext context)
+        public BlogPostsController(BlogPostsContext context, IDataRepository<BlogPost> Repo)
         {
             _context = context;
+            _Repo = Repo;
         }
 
         // GET: api/BlogPosts
         [HttpGet]
         public async Task<ActionResult<IEnumerable<BlogPost>>> GetBlogPost()
         {
-            return await _context.BlogPost.ToListAsync();
+            return await _context.BlogPost.OrderByDescending(p=>p.PostId).ToListAsync();
         }
 
         // GET: api/BlogPosts/5
@@ -55,7 +58,8 @@ namespace Blog.Controllers
 
             try
             {
-                await _context.SaveChangesAsync();
+                _Repo.update(blogPost);
+                var save = await _Repo.SaveAsync(blogPost);
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -76,8 +80,8 @@ namespace Blog.Controllers
         [HttpPost]
         public async Task<ActionResult<BlogPost>> PostBlogPost(BlogPost blogPost)
         {
-            _context.BlogPost.Add(blogPost);
-            await _context.SaveChangesAsync();
+            _Repo.add(blogPost);
+            var save = await _Repo.SaveAsync(blogPost);
 
             return CreatedAtAction("GetBlogPost", new { id = blogPost.PostId }, blogPost);
         }
@@ -92,8 +96,8 @@ namespace Blog.Controllers
                 return NotFound();
             }
 
-            _context.BlogPost.Remove(blogPost);
-            await _context.SaveChangesAsync();
+            _Repo.delete(blogPost);
+            var save = await _Repo.SaveAsync(blogPost);
 
             return blogPost;
         }

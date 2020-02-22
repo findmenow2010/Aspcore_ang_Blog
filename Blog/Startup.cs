@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
+using Blog.Data;
+using Blog.Models;
 using Newtonsoft.Json.Serialization;
 
 namespace Blog
@@ -29,12 +31,13 @@ namespace Blog
         {
             services
                 .AddMvc()
-                .AddJsonOptions(opt=>opt.SerializerSettings.ContractResolver = new DefaultContractResolver())
+                .AddJsonOptions(option=>option.SerializerSettings.ContractResolver = new DefaultContractResolver())
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
 
             services.AddDbContext<BlogPostsContext>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("BlogPostsContext")));
 
+            services.AddScoped<IDataRepository<BlogPost>, DataRepository<BlogPost>>();
             services.AddCors();
         }
 
@@ -52,7 +55,8 @@ namespace Blog
             }
 
             app.UseHttpsRedirection();
-            app.UseCors(opt=>opt.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod());
+
+            app.UseCors(op=>op.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod());
             app.UseMvc();
         }
     }
